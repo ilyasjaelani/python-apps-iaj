@@ -42,6 +42,16 @@ pipeline {
         //         }
         //     }
         // }
+        stage('Create namespace on Kubernetes') {
+            steps {
+                script {
+                    // Create namespace on Kubernetes using kubectl
+                    sh '''
+                        kubectl create namespace $KUBERNETES_NAMESPACE
+                    '''
+                }
+            }
+        }	
         stage('Deploy again to Kubernetes') {
             steps {
                 script {
