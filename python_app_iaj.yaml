@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: python-app-iaj
+  name: python-app-iaj
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-app-iaj
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: python-app-iaj
+    spec:
+      containers:
+      - image: ilyasjaelani/python-app-iaj:v1
+        name: python-app-iaj
+        resources: {}
+status: {}
