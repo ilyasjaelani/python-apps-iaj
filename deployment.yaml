@@ -1,19 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
+  name: python-app-iaj
   labels:
     app: python-app-iaj
-  name: python-app-iaj
 spec:
   replicas: 2
   selector:
     matchLabels:
       app: python-app-iaj
-  strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: python-app-iaj
     spec:
@@ -22,8 +19,8 @@ spec:
         name: python-app-iaj
         ports:
         - containerPort: 5000
-        resources: {}
 
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -42,8 +39,8 @@ spec:
           service:
             name: python-app-iaj
             port:
-              number: 80
-
+              number: 8080
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -57,5 +54,5 @@ spec:
   ports:
   - protocol: TCP
     port: 8080
-    targetPort: 5000
+    targetPort: 5000
 
