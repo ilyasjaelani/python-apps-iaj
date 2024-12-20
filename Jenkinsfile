@@ -22,16 +22,26 @@ pipeline {
                 }
             }
         }
-        //stage('View describe pods') {
-        //    steps {
-        //        script {
-        //            // Create namespace on Kubernetes using kubectl
-        //            sh '''
-        //                kubectl describe pods ilyas-wordpress-mysql-fb58f47d-xflzh -n $KUBERNETES_NAMESPACE
-        //            '''
-        //        }
-        //    }
-        //}
+        stage('View describe pods wp') {
+            steps {
+                script {
+                    // Create namespace on Kubernetes using kubectl
+                    sh '''
+                        kubectl describe pods ilyas-wordpress-797bd4568-npvc5 -n $KUBERNETES_NAMESPACE
+                    '''
+                }
+            }
+        }
+        stage('View describe pods mysql') {
+            steps {
+                script {
+                    // Create namespace on Kubernetes using kubectl
+                    sh '''
+                        kubectl describe pods ilyas-wordpress-mysql-fb58f47d-qpz9b -n $KUBERNETES_NAMESPACE
+                    '''
+                }
+            }
+        }
         stage('View Nodes') {
             steps {
                 script {
