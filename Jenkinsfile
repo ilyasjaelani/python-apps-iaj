@@ -22,16 +22,16 @@ pipeline {
                 }
             }
         }
-        stage('View describe pods') {
-            steps {
-                script {
-                    // Create namespace on Kubernetes using kubectl
-                    sh '''
-                        kubectl describe pods ilyas-wordpress-mysql-fb58f47d-xflzh -n $KUBERNETES_NAMESPACE
-                    '''
-                }
-            }
-        }
+        //stage('View describe pods') {
+        //    steps {
+        //        script {
+        //            // Create namespace on Kubernetes using kubectl
+        //            sh '''
+        //                kubectl describe pods ilyas-wordpress-mysql-fb58f47d-xflzh -n $KUBERNETES_NAMESPACE
+        //            '''
+        //        }
+        //    }
+        //}
         stage('View Nodes') {
             steps {
                 script {
