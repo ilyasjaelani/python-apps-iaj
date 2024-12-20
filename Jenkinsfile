@@ -27,7 +27,7 @@ pipeline {
                 script {
                     // Create namespace on Kubernetes using kubectl
                     sh '''
-                        kubectl describe pods ilyas-wordpress-797bd4568-npvc5 -n $KUBERNETES_NAMESPACE
+                        kubectl describe pods ilyas-wordpress-f59844898-wfq22 -n $KUBERNETES_NAMESPACE
                     '''
                 }
             }
@@ -37,7 +37,7 @@ pipeline {
                 script {
                     // Create namespace on Kubernetes using kubectl
                     sh '''
-                        kubectl describe pods ilyas-wordpress-mysql-fb58f47d-qpz9b -n $KUBERNETES_NAMESPACE
+                        kubectl describe pods ilyas-wordpress-mysql-84b7946568-2lqww -n $KUBERNETES_NAMESPACE
                     '''
                 }
             }
