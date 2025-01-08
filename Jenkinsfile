@@ -50,6 +50,7 @@ pipeline {
                     // Create namespace on Kubernetes using kubectl
                     sh '''
                         kubectl get all -n $KUBERNETES_NAMESPACE
+                        kubectl describe pods wordpress-c5f9f8897-2f2vd -n $KUBERNETES_NAMESPACE
                     '''
                 }
             }
