@@ -62,7 +62,7 @@ pipeline {
         //            '''
         //        }
         //    }
-        }
+        //}
         stage('rollout restart  Kubernetes') {
             steps {
                 script {
