@@ -33,24 +33,23 @@ pipeline {
         //        }
         //    }
         //}
-        //stage('delete manifest in Kubernetes') {
-        //   steps {
-        //        script {
-        //            // Deploy to Kubernetes using kubectl
-        //            sh '''
-        //                kubectl delete -k ./ -n $KUBERNETES_NAMESPACE
-        //                sleep 60
-        //            '''
-        //        }
-        //    }
-        //}
+        stage('delete manifest in Kubernetes') {
+           steps {
+                script {
+                    // Deploy to Kubernetes using kubectl
+                    sh '''
+                        kubectl delete -k ./ -n $KUBERNETES_NAMESPACE
+                        sleep 60
+                    '''
+                }
+            }
+        }
         stage('View Namespaces') {
             steps {
                 script {
                     // Create namespace on Kubernetes using kubectl
                     sh '''
                         kubectl get all -n $KUBERNETES_NAMESPACE
-                        kubectl describe pods wordpress-c5f9f8897-2f2vd -n $KUBERNETES_NAMESPACE
                     '''
                 }
             }
