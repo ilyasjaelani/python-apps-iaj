@@ -31,17 +31,17 @@ pipeline {
                 }
             }
         }
-        // stage('delete manifest in Kubernetes') {
-        //     steps {
-        //         script {
-        //             // Deploy to Kubernetes using kubectl
-        //             sh '''
-        //                 kubectl delete -f deployment.yaml -n $KUBERNETES_NAMESPACE
-        //                 sleep 60
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('delete manifest in Kubernetes') {
+            steps {
+                script {
+                    // Deploy to Kubernetes using kubectl
+                    sh '''
+                        kubectl delete -f deployment.yaml -n $KUBERNETES_NAMESPACE
+                        sleep 60
+                    '''
+                }
+            }
+        }
         //stage('Create namespace on Kubernetes') {
         //    steps {
         //        script {
@@ -52,16 +52,16 @@ pipeline {
         //        }
         //    }
         //}	
-        stage('Deploy again to Kubernetes') {
-            steps {
-                script {
-                    // Deploy to Kubernetes using kubectl
-                    sh '''
-                        kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
-                        sleep 60
-                    '''
-                }
-            }
+        //stage('Deploy again to Kubernetes') {
+        //    steps {
+        //        script {
+        //            // Deploy to Kubernetes using kubectl
+        //            sh '''
+        //                kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
+        //                sleep 60
+        //            '''
+        //        }
+        //    }
         }
         stage('rollout restart  Kubernetes') {
             steps {
