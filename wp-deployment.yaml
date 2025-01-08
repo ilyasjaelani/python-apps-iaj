@@ -1,0 +1,177 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ilyas-wordpress-mysql
+  labels:
+    app: ilyas-wordpress
+spec:
+  ports:
+    - port: 3306
+  selector:
+    app: ilyas-wordpress
+  clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ilyas-wordpress
+  labels:
+    app: ilyas-wordpress
+spec:
+  ports:
+    - protocol: TCP
+      port: 8100
+      targetPort: 80
+  selector:
+    app: ilyas-wordpress
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+  labels:
+    app: ilyas-wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-pv-claim
+  labels:
+    app: ilyas-wordpress
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ilyas-wordpress-mysql
+  labels:
+    app: ilyas-wordpress
+spec:
+  selector:
+    matchLabels:
+      app: ilyas-wordpress
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ilyas-wordpress
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "100m"
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: qjJ1Bd43MWsB
+          #          valueFrom:
+          #            secretKeyRef:
+          #              name: mysql-pass
+          #              key: password
+        - name: MYSQL_DATABASE
+          value: wordpress
+        - name: MYSQL_USER
+          value: wordpress
+        - name: MYSQL_PASSWORD
+          value: qjJ1Bd43MWsB
+            #          valueFrom:
+            #            secretKeyRef:
+            #              name: mysql-pass
+            #              key: password
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
+#---
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: ilyas-wordpress-ingress
+#  annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /
+#    nginx.ingress.kubernetes.io/ssl-redirect: "false" # Nonaktifkan redirect HTTPS (opsional)
+##    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+#spec:
+##  ingressClassName: nginx
+##  tls:
+##  - hosts:
+##    - blog.lakewoodvilla.my.id # Ganti dengan domain/subdomain Anda
+##    secretName: blog-lakewoodvilla-tls # Nama Secret yang berisi sertifikat SSL
+#  rules:
+#  - host: blog.lakewoodvilla.my.id # Ganti dengan domain/subdomain Anda
+#    http:
+#      paths:
+#      - path: /
+#        pathType: Prefix
+#        backend:
+#          service:
+#            name: ilyas-wordpress
+#            port:
+#              number: 8100
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ilyas-wordpress
+  labels:
+    app: ilyas-wordpress
+spec:
+  selector:
+    matchLabels:
+      app: ilyas-wordpress
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ilyas-wordpress
+    spec:
+      containers:
+      - image: wordpress:latest
+        name: ilyas-wordpress
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "100m"
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: ilyas-wordpress-mysql
+        - name: WORDPRESS_DB_PASSWORD
+          value: qjJ1Bd43MWsB
+          #          valueFrom:
+          #            secretKeyRef:
+          #              name: mysql-pass
+          #              key: password
+        - name: WORDPRESS_DB_USER
+          value: wordpress
+        ports:
+        - containerPort: 80
+          name: ilyas-wordpress
+        volumeMounts:
+        - name: wordpress-persistent-storage
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-persistent-storage
+        persistentVolumeClaim:
+          claimName: wp-pv-claim
