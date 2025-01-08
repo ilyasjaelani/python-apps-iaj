@@ -12,27 +12,27 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git', url: 'git@github.com:ilyasjaelani/wp-iaj.git']])
             }
         }
-        stage('Create namespace on Kubernetes') {
-            steps {
-                script {
-                   // Create namespace on Kubernetes using kubectl
-                    sh '''
-                        kubectl create namespace $KUBERNETES_NAMESPACE
-                    '''
-                }
-            }
-        }
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    // Deploy to Kubernetes using kubectl
-                    sh '''
-                        kubectl apply -k ./ -n $KUBERNETES_NAMESPACE
-                        sleep 60
-                    '''
-                }
-            }
-        }
+        //stage('Create namespace on Kubernetes') {
+        //    steps {
+        //        script {
+        //           // Create namespace on Kubernetes using kubectl
+        //            sh '''
+        //                kubectl create namespace $KUBERNETES_NAMESPACE
+        //            '''
+        //        }
+        //    }
+        //}
+        //stage('Deploy to Kubernetes') {
+        //    steps {
+        //        script {
+        //            // Deploy to Kubernetes using kubectl
+        //            sh '''
+        //                kubectl apply -k ./ -n $KUBERNETES_NAMESPACE
+        //                sleep 60
+        //            '''
+        //        }
+        //    }
+        //}
         //stage('delete manifest in Kubernetes') {
         //   steps {
         //        script {
