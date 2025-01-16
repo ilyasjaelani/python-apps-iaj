@@ -2,8 +2,9 @@ pipeline {
     agent any
     environment {
         // Define your Docker Hub credentials and image name here
-        KUBE_CONTEXT = 'ilyas-wordpress'  // Kube context if you have multiple clusters
-        KUBERNETES_NAMESPACE = 'ilyas-wordpress'  // Replace with your namespace
+        DOCKER_IMAGE = 'ilyasjaelani/python-app-iaj:v1' // Image name
+        KUBE_CONTEXT = 'iaj-python'  // Kube context if you have multiple clusters
+        KUBERNETES_NAMESPACE = 'iaj-python'  // Replace with your namespace
     }
     stages {
         stage('Checkout') {
@@ -12,47 +13,81 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git', url: 'git@github.com:ilyasjaelani/python-apps-iaj.git']])
             }
         }
-        //stage('Create namespace on Kubernetes') {
-        //    steps {
-        //        script {
-        //           // Create namespace on Kubernetes using kubectl
-        //            sh '''
-        //                kubectl create namespace $KUBERNETES_NAMESPACE
-        //            '''
-        //        }
-        //    }
-        //}
-        stage('Deploy to Kubernetes') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Deploy to Kubernetes using kubectl
+                    // Build Docker image
                     sh '''
-                        kubectl apply -k ./ -n $KUBERNETES_NAMESPACE
-                        sleep 60
+                        docker build -t $DOCKER_IMAGE .
                     '''
                 }
             }
         }
+        stage('Docker Push') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'ilyas-dockerhub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                sh 'docker push $DOCKER_IMAGE'
+                }
+            }
+        }
         //stage('delete manifest in Kubernetes') {
-        //   steps {
+        //    steps {
         //        script {
         //            // Deploy to Kubernetes using kubectl
         //            sh '''
-        //                kubectl delete -k ./ -n $KUBERNETES_NAMESPACE
+        //                kubectl delete -f deployment.yaml -n $KUBERNETES_NAMESPACE
         //                sleep 60
         //            '''
         //        }
         //    }
         //}
+        stage('Create namespace on Kubernetes') {
+            steps {
+                script {
+                    // Create namespace on Kubernetes using kubectl
+                    sh '''
+                        kubectl create namespace $KUBERNETES_NAMESPACE
+                    '''
+                }
+            }
+        }	
+        stage('Deploy again to Kubernetes') {
+            steps {
+                script {
+                    // Deploy to Kubernetes using kubectl
+                    sh '''
+                        kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
+                        sleep 60
+                    '''
+                }
+            }
+        }
+        stage('rollout restart  Kubernetes') {
+            steps {
+                script {
+                    // Deploy to Kubernetes using kubectl
+                    sh '''
+                        kubectl rollout restart deployment/python-app-iaj -n $KUBERNETES_NAMESPACE
+                    '''
+                }
+            }
+        }
         stage('View Namespaces') {
             steps {
                 script {
                     // Create namespace on Kubernetes using kubectl
                     sh '''
-                        kubectl get all -n $KUBERNETES_NAMESPACE
+                        kubectl get all -n  $KUBERNETES_NAMESPACE
                     '''
                 }
             }
+        }
+    }
+    post {
+        always {
+            // Clean up if necessary, for example, remove the Docker image locally
+            sh 'docker rmi $DOCKER_IMAGE'
         }
     }
 }
