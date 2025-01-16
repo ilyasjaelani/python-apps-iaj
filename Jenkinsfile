@@ -5,7 +5,7 @@ pipeline {
         DOCKER_IMAGE = 'library/python-app-iaj:v1' // Image name
         KUBE_CONTEXT = 'iaj-python'  // Kube context if you have multiple clusters
         KUBERNETES_NAMESPACE = 'iaj-python'  // Replace with your namespace
-	REGISTRY = 'https://registry.lmd.co.id'
+	REGISTRY = 'https://registry.lmd.co.id' //
     }
     stages {
         stage('Checkout') {
@@ -28,7 +28,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'ilyas-harbor', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
                 sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword} $REGISTRY"
-                sh 'docker push $DOCKER_IMAGE'
+                sh 'docker push $REGISTRY/$DOCKER_IMAGE'
                 }
             }
         }
