@@ -57,6 +57,8 @@ pipeline {
             steps {
                 withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'ilyas-k3s', contextName: '', credentialsId: 'ilyas-k3s', namespace: 'default', serverUrl: 'https://172.16.25.129:6443']]) {
                     sh '''
+                        curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl
+                        chmod u+x ./kubectl
                         ./kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
                         sleep 60
                     '''
