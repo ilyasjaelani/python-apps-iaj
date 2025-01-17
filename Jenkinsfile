@@ -55,13 +55,11 @@ pipeline {
         //}	
         stage('Deploy again to Kubernetes') {
             steps {
-                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'ilyas-k3s', contextName: '', credentialsId: 'ilyas-k3s', namespace: 'default', serverUrl: 'https://172.16.25.129:6443']]) {
-                    sh '''
-                        curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl
-                        chmod u+x ./kubectl
-                        ./kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
-                        sleep 60
-                    '''
+                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'ilyas-k3s', contextName: '', credentialsId: 'ilyas-k3s', namespace: 'default', serverUrl: 'https://172.16.25.129:6443']]) {  
+                    sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl'
+                    sh 'chmod u+x ./kubectl'
+                    sh './kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE'
+                    sh 'sleep 60'
                 }
                 //script {
                 //    // Deploy to Kubernetes using kubectl
@@ -75,9 +73,7 @@ pipeline {
         stage('rollout restart  Kubernetes') {
             steps {
                 withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'ilyas-k3s', contextName: '', credentialsId: 'ilyas-k3s', namespace: 'default', serverUrl: 'https://172.16.25.129:6443']]) {
-                    sh '''
-                        ./kubectl rollout restart deployment/python-app-iaj -n $KUBERNETES_NAMESPACE
-                    '''
+                    sh './kubectl rollout restart deployment/python-app-iaj -n $KUBERNETES_NAMESPACE'
                 }
                 //script {
                 //    // Deploy to Kubernetes using kubectl
@@ -91,9 +87,7 @@ pipeline {
             steps {
                 script {
                     // Create namespace on Kubernetes using kubectl
-                    sh '''
-                        ./kubectl get all -n  $KUBERNETES_NAMESPACE
-                    '''
+                    sh './kubectl get all -n  $KUBERNETES_NAMESPACE'
                 }
             }
         }
