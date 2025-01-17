@@ -43,16 +43,16 @@ pipeline {
         //        }
         //    }
         //}
-        stage('Create namespace on Kubernetes') {
-            steps {
-                script {
-                    // Create namespace on Kubernetes using kubectl
-                    sh '''
-                        kubectl create namespace $KUBERNETES_NAMESPACE
-                    '''
-                }
-            }
-        }	
+        //stage('Create namespace on Kubernetes') {
+        //    steps {
+        //        script {
+        //            // Create namespace on Kubernetes using kubectl
+        //            sh '''
+        //                kubectl create namespace $KUBERNETES_NAMESPACE
+        //            '''
+        //        }
+        //    }
+        //}	
         stage('Deploy again to Kubernetes') {
             steps {
                 script {
@@ -66,12 +66,18 @@ pipeline {
         }
         stage('rollout restart  Kubernetes') {
             steps {
-                script {
-                    // Deploy to Kubernetes using kubectl
+                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'ilyas-k3s', contextName: '', credentialsId: 'ilyas-k3s', namespace: 'default', serverUrl: 'https://172.16.25.129:6443']]) {
                     sh '''
-                        kubectl rollout restart deployment/python-app-iaj -n $KUBERNETES_NAMESPACE
+                        ./kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
+                        sleep 60
                     '''
                 }
+                //script {
+                //    // Deploy to Kubernetes using kubectl
+                //    sh '''
+                //        kubectl rollout restart deployment/python-app-iaj -n $KUBERNETES_NAMESPACE
+                //    '''
+                //}
             }
         }
         stage('View Namespaces') {
@@ -79,7 +85,7 @@ pipeline {
                 script {
                     // Create namespace on Kubernetes using kubectl
                     sh '''
-                        kubectl get all -n  $KUBERNETES_NAMESPACE
+                        ./kubectl get all -n  $KUBERNETES_NAMESPACE
                     '''
                 }
             }
