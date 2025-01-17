@@ -55,21 +55,26 @@ pipeline {
         //}	
         stage('Deploy again to Kubernetes') {
             steps {
-                script {
-                    // Deploy to Kubernetes using kubectl
+                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'ilyas-k3s', contextName: '', credentialsId: 'ilyas-k3s', namespace: 'default', serverUrl: 'https://172.16.25.129:6443']]) {
                     sh '''
-                        kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
+                        ./kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
                         sleep 60
                     '''
                 }
+                //script {
+                //    // Deploy to Kubernetes using kubectl
+                //    sh '''
+                //        kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
+                //        sleep 60
+                //    '''
+                //}
             }
         }
         stage('rollout restart  Kubernetes') {
             steps {
                 withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'ilyas-k3s', contextName: '', credentialsId: 'ilyas-k3s', namespace: 'default', serverUrl: 'https://172.16.25.129:6443']]) {
                     sh '''
-                        ./kubectl apply -f deployment.yaml -n $KUBERNETES_NAMESPACE
-                        sleep 60
+                        ./kubectl rollout restart deployment/python-app-iaj -n $KUBERNETES_NAMESPACE
                     '''
                 }
                 //script {
@@ -94,7 +99,7 @@ pipeline {
     post {
         always {
             // Clean up if necessary, for example, remove the Docker image locally
-            sh 'docker rmi $DOCKER_IMAGE'
+            sh 'docker rmi $REGISTRY/$DOCKER_IMAGE'
         }
     }
 }
